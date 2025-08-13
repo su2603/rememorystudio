@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReMemory Studio - Premium Photo Restoration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0b0f;
+            --bg-secondary: #1a1d25;
+            --bg-card: #252936;
+            --text-primary: #ffffff;
+            --text-secondary: #b4bcd0;
+            --text-muted: #8892b0;
+            --accent-gold: #d4af37;
+            --accent-rose: #ff6b8a;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --gradient-primary: linear-gradient(135deg, #d4af37 0%, #ff6b8a 100%);
+            --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0b0f 0%, #1a1d25 50%, #252936 100%);
+            --shadow-glow: 0 8px 32px rgba(212, 175, 55, 0.15);
+            --shadow-hover: 0 12px 40px rgba(212, 175, 55, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 138, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+            z-index: -2;
+            animation: bgShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite linear;
+        }
+
+        .particle:nth-child(even) {
+            background: var(--accent-rose);
+            animation-duration: 20s;
+        }
+
+        .particle:nth-child(3n) {
+            background: var(--accent-cyan);
+            animation-duration: 25s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 11, 15, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(10, 11, 15, 0.95);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-rose);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+
+        /* Page System */
+        .page {
+            min-height: 100vh;
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--gradient-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-orbs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.4;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+
+        .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2), transparent);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .orb:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 138, 0.2), transparent);
+            top: 50%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .orb:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent);
+            bottom: 20%;
+            left: 50%;
+            animation-delay: 6s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-40px) scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 2rem;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+            font-style: italic;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.9s forwards;
+        }
+
+        /* General Section Styling */
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            text-align: center;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-secondary);
+            border-radius: 2px;
+        }
+
+        /* Premium Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--text-primary);
+            border: 2px solid var(--accent-gold);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* Service Cards */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+
+        .service-card {
+            text-align: center;
+        }
+
+        .service-icon {
+            width: 90px;
+            height: 90px;
+            background: var(--gradient-primary);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.2rem;
+            color: var(--bg-primary);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .service-icon::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: var(--gradient-primary);
+            border-radius: 26px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            filter: blur(8px);
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .service-card:hover .service-icon::after {
+            opacity: 0.6;
+        }
+
+        .service-card h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin: 4rem 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: all 0.4s ease;
+            opacity: 1 ;
+            display: block;
+            visibility: visible ;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.9), rgba(255, 107, 138, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay-content {
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .gallery-overlay-content h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-overlay-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+
+        .pricing-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            transform: scale(1.05);
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-secondary);
+            color: var(--text-primary);
+            padding: 0.6rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-features li {
+            padding: 0.8rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .pricing-features li i {
+            color: var(--accent-gold);
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        /* Contact Form */
+        .contact-section {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 30px;
+            padding: 4rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.05), transparent);
+            z-index: -1;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1.2rem 1.8rem;
+            background: var(--bg-card);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .contact-info {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 3rem;
+            border-radius: 25px;
+        }
+
+        .contact-info h3 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-item i {
+            background: var(--gradient-primary);
+            color: var(--bg-primary);
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            margin-right: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .contact-item-content strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .contact-item-content span {
+            color: var(--text-secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .services-grid,
+            .gallery-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            .container {
+                padding: 0 2rem;
+            }
+
+            .section {
+                padding: 4rem 0;
+            }
+
+            .contact-section {
+                padding: 2.5rem;
+            }
+
+            .orb {
+                display: none;
+            }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                opacity: 0.8; 
+                filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+            }
+            50% { 
+                opacity: 1; 
+                filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scroll Progress */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-secondary);
+        }
+
+        /* Sparkle Animation */
+        @keyframes sparkleAnim {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">ReMemory Studio</div>
+        <div class="loading-spinner"></div>
+        <p style="color: var(--text-secondary); margin-top: 1.5rem;">Crafting digital magic...</p>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <nav>
+            <div class="logo">ReMemory Studio</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('about')">About</a></li>
+                <li><a onclick="showPage('services')">Services</a></li>
+                <li><a onclick="showPage('gallery')">Gallery</a></li>
+                <li><a onclick="showPage('pricing')">Pricing</a></li>
+                <li><a onclick="showPage('contact')">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <section class="hero">
+                <div class="hero-orbs">
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <h1 class="hero-title">Restore. Revive. Remember.</h1>
+                    <p class="hero-subtitle">Where every photograph becomes a timeless masterpiece through the art of digital restoration</p>
+                    
+                    <div class="hero-buttons">
+                        <a class="btn btn-primary" onclick="showPage('services')">
+                            <i class="fas fa-magic"></i> Discover Magic
+                        </a>
+                        <a class="btn btn-secondary" onclick="showPage('gallery')">
+                            <i class="fas fa-images"></i> View Transformations
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title animate-on-scroll">Why Choose ReMemory?</h2>
+                    <p class="section-subtitle animate-on-scroll">We blend cutting-edge technology with artistic mastery to resurrect your precious memories</p>
+                    
+                    <div class="services-grid">
+                        <div class="service-card card animate-on-scroll">
+                            <div class="service-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h3>Master Restoration</h3>
+                            <p>Over 15 years of expertise in photo restoration, combining traditional techniques with state-of-the-art digital wizardry to revive your treasured moments.</p>
+                        </div>
+
+                        <div class="service-card card animate-on-scroll">
+                            <div class="service-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <h3>Artistic Colorization</h3>
+                            <p>Transform monochrome memories into vibrant, lifelike masterpieces with historically accurate colors and natural skin tones that tell your story.</p>
+                        </div>
+
+                        <div class="service-card card animate-on-scroll">
+                            <div class="service-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Perfection Promise</h3>
+                            <p>Your satisfaction is our obsession. We guarantee exceptional results and will refine your restoration until it exceeds your wildest expectations.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page">
+            <section class="section" style="padding-top: 8rem;">
+                <div class="container">
+                    <h1 class="section-title">About ReMemory Studio</h1>
+                    <p class="section-subtitle">The story behind the passion for preserving your precious memories</p>
+
+                    <!-- Hero About Section -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin: 4rem 0;">
+                        <div>
+                            <h2 style="font-size: 2.5rem; color: var(--text-primary); margin-bottom: 2rem;">Our Story</h2>
+                            <p style="color: var(--text-secondary); font-size: 1.2rem; line-height: 1.8; margin-bottom: 2rem;">
+                                Founded in 2008, ReMemory Studio was born from a simple yet profound mission: to preserve the irreplaceable moments that define our lives. What started as a small passion project has grown into a premier photo restoration service trusted by thousands of families worldwide.
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 1.2rem; line-height: 1.8;">
+                                Every photograph tells a story, holds a memory, and connects us to our past. We understand that these aren't just pictures – they're windows to precious moments that deserve to be preserved for future generations.
+                            </p>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 3rem;">
+                            <div style="width: 120px; height: 120px; background: var(--gradient-primary); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--bg-primary);">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">15+ Years</h3>
+                            <p style="color: var(--text-secondary);">Of dedication to photo restoration excellence</p>
+                        </div>
+                    </div>
+
+                    <!-- Values Section -->
+                    <div style="margin: 6rem 0;">
+                        <h2 style="font-size: 2.5rem; color: var(--text-primary); text-align: center; margin-bottom: 3rem;">Our Values</h2>
+                        
+                        <div class="services-grid">
+                            <div class="service-card card">
+                                <div class="service-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h3>Excellence</h3>
+                                <p>We never compromise on quality. Every restoration project receives our complete attention and artistic expertise until it exceeds expectations.</p>
+                            </div>
+
+                            <div class="service-card card">
+                                <div class="service-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3>Trust</h3>
+                                <p>Your precious memories are safe with us. We handle every photograph with the utmost care and respect it deserves.</p>
+                            </div>
+
+                            <div class="service-card card">
+                                <div class="service-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3>Family</h3>
+                                <p>We understand the emotional value of family photographs because we're a family business that treasures our own memories too.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Section -->
+                    <div style="margin: 6rem 0;">
+                        <h2 style="font-size: 2.5rem; color: var(--text-primary); text-align: center; margin-bottom: 3rem;">Meet Our Team</h2>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem;">
+                            <div class="card" style="text-align: center;">
+                                <div style="width: 150px; height: 150px; background: var(--gradient-primary); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--bg-primary);">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Sarah Chen</h3>
+                                <p style="color: var(--accent-gold); margin-bottom: 1rem;">Lead Restoration Artist</p>
+                                <p style="color: var(--text-secondary);">15+ years of experience in digital restoration and historical photo colorization. Sarah's artistic vision brings photographs back to life.</p>
+                            </div>
+
+                            <div class="card" style="text-align: center;">
+                                <div style="width: 150px; height: 150px; background: var(--gradient-secondary); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--bg-primary);">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Michael Rodriguez</h3>
+                                <p style="color: var(--accent-rose); margin-bottom: 1rem;">Technical Director</p>
+                                <p style="color: var(--text-secondary);">Expert in AI-powered enhancement and cutting-edge restoration technology. Michael ensures every pixel is perfect.</p>
+                            </div>
+
+                            <div class="card" style="text-align: center;">
+                                <div style="width: 150px; height: 150px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-gold)); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--bg-primary);">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Emma Thompson</h3>
+                                <p style="color: var(--accent-purple); margin-bottom: 1rem;">Customer Success Manager</p>
+                                <p style="color: var(--text-secondary);">Emma ensures every client receives personalized attention and their restoration journey exceeds expectations.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div class="card" style="text-align: center; margin: 4rem 0; padding: 4rem;">
+                        <h2 style="font-size: 2.5rem; color: var(--text-primary); margin-bottom: 3rem;">By the Numbers</h2>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem;">
+                            <div>
+                                <div style="font-size: 3rem; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">5,000+</div>
+                                <p style="color: var(--text-secondary); font-size: 1.1rem;">Photos Restored</p>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 3rem; font-weight: 700; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">98%</div>
+                                <p style="color: var(--text-secondary); font-size: 1.1rem;">Client Satisfaction</p>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 3rem; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">50+</div>
+                                <p style="color: var(--text-secondary); font-size: 1.1rem;">Countries Served</p>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 3rem; font-weight: 700; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">24/7</div>
+                                <p style="color: var(--text-secondary); font-size: 1.1rem;">Support Available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mission Statement -->
+                    <div style="text-align: center; margin: 4rem 0;">
+                        <div class="card" style="max-width: 800px; margin: 0 auto; padding: 4rem;">
+                            <h2 style="font-size: 2.5rem; color: var(--text-primary); margin-bottom: 2rem;">Our Mission</h2>
+                            <p style="font-size: 1.4rem; color: var(--text-secondary); line-height: 1.8; font-style: italic;">
+                                "To preserve the irreplaceable moments that connect us to our history, our loved ones, and ourselves. Through the art and science of digital restoration, we ensure that every precious memory lives on for generations to come."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SERVICES PAGE -->
+        <div id="services" class="page">
+            <section class="section" style="padding-top: 8rem;">
+                <div class="container">
+                    <h1 class="section-title">Our Expertise</h1>
+                    <p class="section-subtitle">Professional restoration services that breathe new life into your most cherished photographs</p>
+
+                    <div class="services-grid">
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h3>Complete Damage Repair</h3>
+                            <p>Expert restoration of scratches, tears, water damage, and fading. We specialize in bringing severely damaged photos back from the brink of oblivion.</p>
+                        </div>
+
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <h3>Professional Colorization</h3>
+                            <p>Transform black & white memories into stunning color portraits. Our artists research period-accurate colors for authentic, breathtaking results.</p>
+                        </div>
+
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                            <h3>AI-Powered Enhancement</h3>
+                            <p>Cutting-edge artificial intelligence enhances clarity, detail, and resolution while preserving the authentic character of your original photograph.</p>
+                        </div>
+
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-puzzle-piece"></i>
+                            </div>
+                            <h3>Missing Elements Recreation</h3>
+                            <p>Seamlessly recreate missing corners, backgrounds, or damaged sections with digital artistry that blends invisibly with your original image.</p>
+                        </div>
+
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-print"></i>
+                            </div>
+                            <h3>Premium Print Services</h3>
+                            <p>Museum-quality printing on archival papers, canvas, metal, and wood. Custom framing options to showcase your restored memories beautifully.</p>
+                        </div>
+
+                        <div class="service-card card">
+                            <div class="service-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Express Restoration</h3>
+                            <p>Urgent restoration needs? Our express service delivers exceptional results in 24-48 hours without compromising on quality or attention to detail.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- GALLERY PAGE -->
+        <div id="gallery" class="page">
+            <section class="section" style="padding-top: 8rem;">
+                <div class="container">
+                    <h1 class="section-title">Before & After</h1>
+                    <p class="section-subtitle">Witness the transformative power of our restoration services through real client projects</p>
+
+                    <div class="gallery-grid">
+                        <!-- Test Image 1 -->
+                        <div class="gallery-item">
+                            <img src="https://i.imgur.com/HS1Qp6U.jpeg" alt="Before/After Example 1">
+                            <div class="gallery-overlay">
+                                <div class="gallery-overlay-content">
+                                    <h3>Family Portrait</h3>
+                                    <p>Damage Repair & Enhancement</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test Image 2 -->
+                        <div class="gallery-item">
+                            <img src="https://i.imgur.com/l4vXV6K.png" alt="Before/After Example 2">
+                            <div class="gallery-overlay">
+                                <div class="gallery-overlay-content">
+                                    <h3>Beautiful Memory</h3>
+                                    <p>B&W to Color Transformation</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test Image 3 -->
+                        <div class="gallery-item">
+                            <img src="https://i.imgur.com/wiElvpT.png" alt="Before/After Example 3">
+                            <div class="gallery-overlay">
+                                <div class="gallery-overlay-content">
+                                    <h3>Vintage Revival</h3>
+                                    <p>Complete Restoration</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional placeholder galleries -->
+                        <div class="gallery-item">
+                            <div style="width: 100%; height: 300px; background: var(--gradient-primary); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: var(--bg-primary); font-size: 1.5rem; font-weight: 600;">
+                                More Restorations Coming Soon
+                            </div>
+                            <div class="gallery-overlay">
+                                <div class="gallery-overlay-content">
+                                    <h3>Historical Document</h3>
+                                    <p>Archive Preservation</p>
+                                </div>
+                            </div>
+                        </div>
+   
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PRICING PAGE -->
+        <div id="pricing" class="page">
+            <section class="section" style="padding-top: 8rem;">
+                <div class="container">
+                    <h1 class="section-title">Investment in Memories</h1>
+                    <p class="section-subtitle">Transparent, value-driven pricing for professional photo restoration that preserves your legacy</p>
+
+                    <div class="pricing-grid">
+                        <div class="pricing-card card">
+                            <h3>Essential Restore</h3>
+                            <div class="price">$20</div>
+                            <ul class="pricing-features">
+                                <li><i class="fas fa-check"></i>Basic damage repair & cleanup</li>
+                                <li><i class="fas fa-check"></i>Color correction & balance</li>
+                                <li><i class="fas fa-check"></i>Dust & scratch removal</li>
+                                <li><i class="fas fa-check"></i>High-resolution digital file</li>
+                                <li><i class="fas fa-check"></i>7-day completion</li>
+                                <li><i class="fas fa-check"></i>Satisfaction guarantee</li>
+                            </ul>
+                            <a class="btn btn-primary" onclick="showPage('contact')">Choose Essential</a>
+                        </div>
+
+                        <div class="pricing-card card featured">
+                            <h3>Professional Restore</h3>
+                            <div class="price">$40</div>
+                            <ul class="pricing-features">
+                                <li><i class="fas fa-check"></i>Complete damage restoration</li>
+                                <li><i class="fas fa-check"></i>Advanced AI enhancement</li>
+                                <li><i class="fas fa-check"></i>Missing elements recreation</li>
+                                <li><i class="fas fa-check"></i>Print-ready ultra-high res</li>
+                                <li><i class="fas fa-check"></i>3-day completion</li>
+                                <li><i class="fas fa-check"></i>2 revisions included</li>
+                            </ul>
+                            <a class="btn btn-primary" onclick="showPage('contact')">Choose Professional</a>
+                        </div>
+
+                        <div class="pricing-card card">
+                            <h3>Masterpiece Color</h3>
+                            <div class="price">$100</div>
+                            <ul class="pricing-features">
+                                <li><i class="fas fa-check"></i>Everything in Professional</li>
+                                <li><i class="fas fa-check"></i>Full artistic colorization</li>
+                                <li><i class="fas fa-check"></i>Historical color research</li>
+                                <li><i class="fas fa-check"></i>Multiple color variations</li>
+                                <li><i class="fas fa-check"></i>48-hour completion</li>
+                                <li><i class="fas fa-check"></i>Unlimited revisions</li>
+                            </ul>
+                            <a class="btn btn-primary" onclick="showPage('contact')">Choose Masterpiece</a>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 5rem;">
+                        <div class="card" style="max-width: 700px; margin: 0 auto;">
+                            <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.8rem;">Custom Projects</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.2rem;">
+                                Large collections, commercial work, or unique restoration challenges? We create bespoke solutions tailored to your specific needs.
+                            </p>
+                            <a class="btn btn-secondary" onclick="showPage('contact')">Request Custom Quote</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page">
+            <section class="section" style="padding-top: 8rem;">
+                <div class="container">
+                    <h1 class="section-title">Begin Your Journey</h1>
+                    <p class="section-subtitle">Ready to transform your precious memories? Let's create something extraordinary together</p>
+
+                    <div class="contact-section">
+                        <div class="contact-grid">
+                            <form id="contactForm">
+                                <h3 style="color: var(--text-primary); margin-bottom: 2rem; font-size: 2rem;">Share Your Vision</h3>
+                                
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="service">Service Package</label>
+                                    <select id="service" name="service" required>
+                                        <option value="">Select your package</option>
+                                        <option value="essential">Essential Restore - $69</option>
+                                        <option value="professional">Professional Restore - $129</option>
+                                        <option value="masterpiece">Masterpiece Color - $219</option>
+                                        <option value="custom">Custom Project</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description">Tell Us About Your Photos</label>
+                                    <textarea id="description" name="description" rows="5" placeholder="Describe your photos, their condition, what you envision, and any special requirements or family history we should know..." required></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                    <i class="fas fa-paper-plane"></i> Send My Request
+                                </button>
+                            </form>
+
+                            <div class="contact-info">
+                                <h3>Get In Touch</h3>
+                                
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div class="contact-item-content">
+                                        <strong>Email</strong>
+                                        <span>hello@rememory.studio</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div class="contact-item-content">
+                                        <strong>Phone</strong>
+                                        <span>(555) 123-PHOTO</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div class="contact-item-content">
+                                        <strong>Studio Hours</strong>
+                                        <span>Mon-Fri: 9AM-7PM EST</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <i class="fas fa-globe"></i>
+                                    <div class="contact-item-content">
+                                        <strong>Service Area</strong>
+                                        <span>Worldwide Digital Delivery</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(212, 175, 55, 0.2);">
+                                    <h4 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.3rem;">The ReMemory Promise</h4>
+                                    <ul style="list-style: none; color: var(--text-secondary); line-height: 1.8;">
+                                        <li style="margin-bottom: 0.8rem;">✨ 15+ years of restoration mastery</li>
+                                        <li style="margin-bottom: 0.8rem;">✨ 100% satisfaction guarantee</li>
+                                        <li style="margin-bottom: 0.8rem;">✨ Secure & confidential handling</li>
+                                        <li style="margin-bottom: 0.8rem;">✨ Lightning-fast turnaround</li>
+                                        <li style="margin-bottom: 0.8rem;">✨ Museum-quality results</li>
+                                        <li>✨ Unlimited support & guidance</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                initParticles();
+                initScrollAnimations();
+            }, 2500);
+        });
+
+        // Create floating particles
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Navigation System
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+                setTimeout(() => {
+                    page.style.display = 'none';
+                }, 300);
+            });
+            
+            // Show target page
+            setTimeout(() => {
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.style.display = 'block';
+                    setTimeout(() => {
+                        targetPage.classList.add('active');
+                        // Scroll to top
+                        window.scrollTo(0, 0);
+                        // Re-initialize scroll animations for new page
+                        initScrollAnimations();
+                    }, 50);
+                }
+            }, 300);
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrolled = window.pageYOffset;
+            
+            if (scrolled > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Update scroll progress
+            const winHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrolled / winHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // Scroll animations
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all animate-on-scroll elements in active page
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                                activePage.querySelectorAll('.animate-on-scroll').forEach(el => {
+                    el.classList.remove('animated'); // Reset animation
+                    observer.observe(el);
+                });
+            }
+        }
+
+        // Form submission with enhanced animation
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = this.querySelector('button[type="submit"]');
+            const originalHTML = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Magic...';
+            button.disabled = true;
+            button.style.background = 'linear-gradient(135deg, #8b5cf6, #06b6d4)';
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check"></i> Message Sent Successfully!';
+                button.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.background = '';
+                    button.disabled = false;
+                    this.reset();
+                    
+                    // Success notification
+                    showNotification();
+                }, 3000);
+            }, 2000);
+        });
+
+        // Success notification
+        function showNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                background: var(--gradient-primary);
+                color: var(--bg-primary);
+                padding: 2rem 3rem;
+                border-radius: 20px;
+                font-size: 1.3rem;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: var(--shadow-glow);
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                text-align: center;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-magic" style="font-size: 2rem; display: block; margin-bottom: 1rem;"></i>
+                Thank you! We'll bring your memories to life within 24 hours.
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translate(-50%, -50%) scale(0)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 400);
+            }, 4500);
+        }
+
+        // Add sparkle effect
+        setTimeout(() => {
+            setInterval(createSparkle, 3000);
+        }, 3000);
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: var(--accent-gold);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1000;
+                left: ${Math.random() * window.innerWidth}px;
+                top: ${Math.random() * window.innerHeight}px;
+                animation: sparkleAnim 2s ease-out forwards;
+            `;
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                if (sparkle.parentNode) {
+                    sparkle.parentNode.removeChild(sparkle);
+                }
+            }, 2000);
+        }
+
+        // Mobile menu toggle (for future enhancement)
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('mobile-active');
+        }
+
+        // Smooth hover effects for gallery items
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05) rotateY(5deg)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotateY(0deg)';
+                });
+            });
+        });
+
+        // Pricing card interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const pricingCards = document.querySelectorAll('.pricing-card');
+            pricingCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('featured')) {
+                        this.style.transform = 'scale(1.02) translateY(-10px)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('featured')) {
+                        this.style.transform = 'scale(1) translateY(0px)';
+                    }
+                });
+            });
+        });
+
+        // Enhanced button interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px) scale(1.02)';
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0px) scale(1)';
+                });
+            });
+        });
+
+        // Initialize everything on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure home page is active by default
+            showPage('home');
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(e) {
+            if (e.state && e.state.page) {
+                showPage(e.state.page);
+            }
+        });
+
+        // Add page state to browser history
+        function showPageWithHistory(pageId) {
+            showPage(pageId);
+            history.pushState({page: pageId}, '', `#${pageId}`);
+        }
+
+        // Enhanced navigation with history support
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const pageId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    showPageWithHistory(pageId);
+                });
+            });
+        });
+
+        // Form validation enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim() !== '') {
+                        this.style.borderColor = 'var(--accent-gold)';
+                        this.style.boxShadow = '0 0 0 2px rgba(212, 175, 55, 0.1)';
+                    } else if (this.hasAttribute('required')) {
+                        this.style.borderColor = 'var(--accent-rose)';
+                        this.style.boxShadow = '0 0 0 2px rgba(255, 107, 138, 0.1)';
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--accent-gold)';
+                    this.style.boxShadow = '0 0 0 3px rgba(212, 175, 55, 0.1)';
+                });
+            });
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            // ESC key to close any open modals or notifications
+            if (e.key === 'Escape') {
+                const notifications = document.querySelectorAll('[style*="position: fixed"]');
+                notifications.forEach(notification => {
+                    if (notification.style.zIndex === '10000') {
+                        notification.style.transform = 'translate(-50%, -50%) scale(0)';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 400);
+                    }
+                });
+            }
+        });
+
+        // Performance optimization: Intersection Observer for animations
+        const createObserver = () => {
+            return new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        // Unobserve after animation to improve performance
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+        };
+
+        
+
+        // Add custom cursor effect for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const interactiveElements = document.querySelectorAll('a, button, .btn, .card, .gallery-item');
+            
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    document.body.style.cursor = 'pointer';
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    document.body.style.cursor = 'default';
+                });
+            });
+        });
+
+        // Error handling for images
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    this.style.display = 'none';
+                    // Create placeholder
+                    const placeholder = document.createElement('div');
+                    placeholder.style.cssText = `
+                        width: 100%;
+                        height: 300px;
+                        background: var(--gradient-primary);
+                        border-radius: 15px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: var(--bg-primary);
+                        font-size: 1.2rem;
+                        font-weight: 600;
+                    `;
+                    placeholder.textContent = 'Image Coming Soon';
+                    this.parentNode.insertBefore(placeholder, this);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
